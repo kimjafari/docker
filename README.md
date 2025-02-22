@@ -1,23 +1,40 @@
-#install docker
-dnf -y upadte
-sudo dnf remove -y docker docker-client docker-client-latest docker-common docker-latest docker-latest-logrotate docker-logrotate docker-selinux docker-engine-selinux docker-engine
-sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
-sudo dnf install docker-ce docker-ce-cli containerd.io --nobest -y
+Steps to Set Up the Project
+
+1. Install Docker
+
+Ensure that Docker is installed on your Linux system by following the official guide. Verify the installation with:
+
+sudo docker --version
+
+If Docker is not installed, you can install it using:
+
+curl -fsSL https://get.docker.com | sh
 sudo systemctl start docker
 sudo systemctl enable docker
-#create Dockerfile directory
-mkdir nginx-docker
-cd nginx-docker
-touch Dockerfile
-nano Dockerfile
-FROM nginx:latest  
-EXPOSE 8080  
-RUN rm /etc/nginx/conf.d/default.conf  
-COPY nginx.conf /etc/nginx/conf.d/default.conf  
+
+2. Create a Dockerfile
+
+Create a file named Dockerfile with the following content:
+
+FROM nginx:latest
+RUN rm /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY ./html /usr/share/nginx/html
-#create nginx file
-touch nginx.conf
-nano nginx.conf
+
+This file:
+
+Pulls the latest Nginx image.
+
+Removes the default configuration.
+
+Copies a custom Nginx configuration file.
+
+Copies the website files into the Nginx root directory.
+
+3. Configure Nginx
+
+Create a file named nginx.conf with the following content:
+
 server {
     listen 8080;
     server_name localhost;
@@ -25,26 +42,60 @@ server {
     location / {
         root /usr/share/nginx/html;
         index index.html;
-                allow 1.1.1.1;
+        allow YOUR_IP_HERE;
         deny all;
     }
 }
-#create index.html
-mkdir html
-touch html/index.html
-nano html/index.html
+
+Replace YOUR_IP_HERE with the specific IP address allowed to access the website.
+
+4. Create Website Content
+
+Inside the project directory, create an html folder and add an index.html file:
+
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Dockerized Nginx</title>
+    <title>Welcome</title>
 </head>
 <body>
-    <h1>Welcome to my Nginx Docker container!</h1>
+    <h1>Welcome to my website</h1>
+    <p>This site is set up as part of a task for the company Mohaymen.</p>
+    <p>Thank you for visiting!</p>
 </body>
 </html>
 
+5. Build the Docker Image
+
+Run the following command to build the Docker image:
+
 docker build -t my-nginx .
+
+6. Run the Container
+
+Run the Nginx container on port 8080 with automatic restart:
+
 docker run -d --restart always --name my-nginx-container -p 8080:8080 my-nginx
+
+7. Verify and Test
+
+Check if the container is running:
+
+docker ps
+
+Access the website in your browser:
+
+http://YOUR_SERVER_IP:8080
+
+8. Stop and Remove the Container (if needed)
+
+If you need to stop and remove the container:
+
+docker stop my-nginx-container
+
+docker rm my-nginx-container
+
+Conclusion
+
+This project successfully deploys an Nginx web server inside a Docker container with restricted IP access. The website is hosted on port 8080 and will automatically restart if the container stops.
 
