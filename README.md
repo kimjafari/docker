@@ -9,7 +9,9 @@ Ensure that Docker is installed on your Linux system by following the official g
 If Docker is not installed, you can install it using:
 
 ```
-curl -fsSL https://get.docker.com | sh
+sudo dnf install -y yum-utils
+sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+sudo dnf install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 sudo systemctl start docker
 sudo systemctl enable docker
 ```
@@ -19,6 +21,10 @@ sudo systemctl enable docker
 Create a file named `Dockerfile` with the following content:
 
 ```
+mkdir nginx-docker
+cd nginx-docker
+touch Dockerfile
+nano Dockerfile
 FROM nginx:latest
 RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/conf.d/default.conf
@@ -75,15 +81,15 @@ Inside the project directory, create an html folder and add an `index.html` file
 
 5. Build the Docker Image
 
-Run the following command to build the Docker image:
+Run the following command to build the Docker image with TAG:
 
-`docker build -t my-nginx .`
+`docker build -t my-nginx:stable .`
 
 6. Run the Container
 
 Run the Nginx container on port 8080 with automatic restart:
 
-`docker run -d --restart always --name my-nginx-container -p 8080:8080 my-nginx`
+`docker run -d --restart always --name my-nginx-container -p 8080:8080 my-nginx:stable`
 
 7. Verify and Test
 
